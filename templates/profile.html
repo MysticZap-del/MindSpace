@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+
+    <style>
+        /* Custom scrollbar for dark mode (optional) */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1f2937; /* gray-800 */
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #4b5563; /* gray-600 */
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6b7280; /* gray-500 */
+        }
+
+        /* Profile picture adjustments */
+        #profile-picture-preview {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            /* Dark mode border */
+            border: 3px solid #4b5563; /* gray-600 */
+            /* Dark mode background placeholder */
+            background-color: #374151; /* gray-700 */
+        }
+        /* Ensure chart canvas background is transparent or matches theme */
+        #moodChart {
+            background-color: transparent;
+        }
+        /* Define profile label/value/input styles directly if not using @apply */
+        .profile-label {
+            font-size: 0.75rem; /* text-xs */
+            font-weight: 500; /* font-medium */
+            color: #9ca3af; /* gray-400 */
+        }
+        .profile-value {
+            margin-top: 0.25rem; /* mt-1 */
+            font-size: 1rem; /* text-base */
+            font-weight: 600; /* font-semibold */
+            color: #d1d5db; /* gray-300 */
+        }
+        .profile-input {
+            margin-top: 0.25rem; /* mt-1 */
+            display: block;
+            width: 100%;
+            padding: 0.25rem 0.5rem; /* py-1 px-2 */
+            border-width: 1px;
+            border-color: #4b5563; /* gray-600 */
+            border-radius: 0.375rem; /* rounded-md */
+            box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); /* shadow-sm */
+            font-size: 0.75rem; /* sm:text-xs */
+            background-color: #374151; /* gray-700 */
+            color: #e5e7eb; /* gray-200 */
+        }
+        .profile-input:focus {
+           outline: none;
+           border-color: #a855f7; /* focus:border-purple-500 */
+           --tw-ring-color: #a855f7; /* focus:ring-purple-500 */
+           box-shadow: 0 0 0 2px var(--tw-ring-color); /* Simplified focus ring */
+        }
+        /* Chart container */
+        #mood-chart-container {
+            width: 100%;
+            max-width: 600px;
+            height: 300px;
+            margin-top: 1rem;
+        }
+        /* Quote styling */
+        #daily-quote-container {
+            border-left: 4px solid #a855f7; /* purple-500 */
+            padding: 0.75rem 1rem; /* p-3 pl-4 */
+            margin-top: 1.5rem; /* mt-6 */
+            background-color: #374151; /* gray-700 */
+            border-radius: 0.375rem; /* rounded-md */
+        }
+        #daily-quote-text {
+            font-style: italic;
+            color: #d1d5db; /* gray-300 */
+        }
+        #daily-quote-author {
+             display: block;
+             margin-top: 0.5rem; /* mt-2 */
+             text-align: right;
+             font-size: 0.875rem; /* text-sm */
+             color: #9ca3af; /* gray-400 */
+        }
+    </style>
+</head>
+<body class="bg-gray-900 font-sans text-gray-200">
+
+    <nav class="bg-gray-800 text-white p-4 shadow-md">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="{{ url_for('index') }}" class="text-xl font-bold hover:text-purple-300">MindSpace</a>
+            <div>
+                <a href="{{ url_for('index') }}" class="px-3 py-2 hover:bg-purple-700 rounded transition-colors">Home</a>
+                <a href="{{ url_for('profile') }}" class="px-3 py-2 bg-purple-600 rounded font-semibold hover:bg-purple-700 transition-colors">Profile</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto mt-8 p-5 max-w-4xl bg-gray-800 rounded-lg shadow-lg border border-gray-700">
+        <h1 class="text-xl font-bold text-gray-100 mb-5 border-b border-gray-600 pb-2">User Profile & Mood Trend</h1>
+
+        <div id="loading-state" class="text-center text-gray-400">Loading profile...</div>
+        <div id="error-state" class="text-center text-red-400 hidden"></div>
+
+        <div id="profile-content" class="hidden md:flex md:flex-wrap md:gap-6">
+
+            <div class="w-full md:w-auto md:flex-shrink-0 md:max-w-xs">
+                <div class="flex flex-col items-center mb-6">
+                    <img id="profile-picture-preview" src="{{ url_for('static', filename='images/placeholder.png') }}" alt="Profile Picture" class="mb-3">
+                    <div class="edit-mode-element text-center hidden">
+                        <label for="profile-picture-upload" class="cursor-pointer bg-gray-600 hover:bg-gray-500 text-gray-200 font-semibold py-1 px-3 rounded-md text-xs transition-colors">
+                            Change Picture
+                        </label>
+                        <input type="file" id="profile-picture-upload" class="hidden" accept="image/*">
+                        <p class="text-xs text-gray-500 mt-1">Max 2MB</p>
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <div>
+                        <label class="profile-label">Name</label>
+                        <p id="profile-name-view" class="profile-value view-mode-element"></p>
+                        <input type="text" id="profile-name-edit" class="profile-input edit-mode-element hidden">
+                    </div>
+                    <div>
+                        <label class="profile-label">Age</label>
+                        <p id="profile-age-view" class="profile-value view-mode-element"></p>
+                        <input type="number" id="profile-age-edit" class="profile-input edit-mode-element hidden">
+                    </div>
+                    <div>
+                        <label class="profile-label">Weight (kg)</label>
+                        <p id="profile-weight-view" class="profile-value view-mode-element"></p>
+                        <input type="number" step="0.1" id="profile-weight-edit" class="profile-input edit-mode-element hidden">
+                    </div>
+                </div>
+
+                <div class="mt-6 pt-3 border-t border-gray-600 flex justify-end space-x-2">
+                    <button id="edit-profile-button" class="view-mode-element bg-purple-600 hover:bg-purple-700 text-white font-bold py-1 px-3 rounded text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-800">
+                        Edit
+                    </button>
+                    <button id="save-changes-button" class="edit-mode-element bg-green-600 hover:bg-green-700 text-white font-bold py-1 px-3 rounded text-sm hidden transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-800">
+                        Save
+                    </button>
+                    <button id="cancel-button" class="edit-mode-element bg-gray-600 hover:bg-gray-500 text-white font-bold py-1 px-3 rounded text-sm hidden transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-gray-800">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+
+            <div class="w-full md:flex-1 mt-6 md:mt-0">
+                 <h2 class="text-lg font-semibold text-gray-200 mb-3">Weekly Mood Score Trend</h2>
+                 <div id="chart-loading-state" class="text-sm text-gray-400">Loading chart data...</div>
+                 <div id="chart-error-state" class="text-sm text-red-400 hidden"></div>
+                 <div id="mood-chart-container" class="bg-gray-700 p-2 rounded-md"> <canvas id="moodChart"></canvas>
+                </div>
+
+                 <div id="daily-quote-container" class="mt-6">
+                     <h3 class="text-md font-semibold text-gray-200 mb-2">Quote for Today</h3>
+                     <div id="quote-loading-state" class="text-sm text-gray-400">Loading quote...</div>
+                     <div id="quote-error-state" class="text-sm text-red-400 hidden"></div>
+                     <blockquote id="quote-content" class="hidden">
+                         <p id="daily-quote-text"></p>
+                         <cite id="daily-quote-author" class="hidden"></cite> </blockquote>
+                 </div>
+            </div>
+
+        </div> </div>
+    <script src="{{ url_for('static', filename='profile.js') }}"></script>
+</body>
+</html>

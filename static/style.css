@@ -1,149 +1,51 @@
-/* Original Body style - applied only when chatbot.html is viewed directly */
-body.original-page-style {
+/* ... (keep all your existing styles for chatbot and floating elements) ... */
+
+/* Example custom styles for profile page if not using @apply or CDN */
+/* You might not need these if using Tailwind CDN + @apply */
+.profile-label {
+    /* Styles matching Tailwind classes */
+    font-size: 0.875rem; /* text-sm */
+    line-height: 1.25rem;
+    font-weight: 500; /* font-medium */
+    color: #6b7280; /* text-gray-500 */
+}
+
+.profile-value {
+    /* Styles matching Tailwind classes */
+    margin-top: 0.25rem; /* mt-1 */
+    font-size: 1.125rem; /* text-lg */
+    line-height: 1.75rem;
+    font-weight: 600; /* font-semibold */
+    color: #1f2937; /* text-gray-800 */
+}
+
+.profile-input {
+    /* Styles matching Tailwind classes */
+    margin-top: 0.25rem; /* mt-1 */
+    display: block;
+    width: 100%;
+    padding-left: 0.75rem; /* px-3 */
+    padding-right: 0.75rem;
+    padding-top: 0.5rem; /* py-2 */
+    padding-bottom: 0.5rem;
+    border-width: 1px;
+    border-color: #d1d5db; /* border-gray-300 */
+    border-radius: 0.375rem; /* rounded-md */
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); /* shadow-sm */
+    font-size: 0.875rem; /* sm:text-sm */
+    line-height: 1.25rem;
+}
+.profile-input:focus {
+   outline: none;
+    --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+   --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(1px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+   box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
+   border-color: #0ea5e9; /* focus:border-sky-500 */
+   --tw-ring-color: #0ea5e9; /* focus:ring-sky-500 */
+}
+
+/* Ensure body has some base styling if not covered */
+body {
     font-family: 'Inter', sans-serif;
-    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-}
-
-/* --- Styles for Floating Chat Elements (on index.html) --- */
-
-#floating-chat-container {
-    /* Uses Tailwind classes for positioning, size, shadow, etc. */
-    /* Add transition for smooth appearance */
-    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
-    opacity: 0;
-    transform: translateY(20px); /* Start slightly lower */
-}
-
-#floating-chat-container.visible {
-    display: flex; /* Use flex instead of block if you used flex-col */
-    opacity: 1;
-    transform: translateY(0);
-}
-
-#chat-toggle-button svg {
-    transition: transform 0.3s ease;
-}
-
-#chat-toggle-button.open svg {
-     transform: rotate(180deg); /* Example: Change icon on open */
-}
-
-
-/* --- Original Chatbot Styles (used inside chatbot.html) --- */
-/* Apply original background only if body doesn't have it (e.g., inside iframe) */
-body:not(.original-page-style) {
-     font-family: 'Inter', sans-serif;
-}
-
-
-#chatbox::-webkit-scrollbar {
-    width: 6px;
-}
-
-#chatbox::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 10px;
-}
-
-#chatbox::-webkit-scrollbar-thumb {
-    background: #cbd5e1; /* Slightly darker */
-    border-radius: 10px;
-}
-
-#chatbox::-webkit-scrollbar-thumb:hover {
-    background: #94a3b8; /* Even darker on hover */
-}
-
-.message {
-    opacity: 0;
-    transform: translateY(10px);
-    animation: fadeIn 0.3s ease-out forwards;
-}
-
-@keyframes fadeIn {
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Loading Indicator Styles */
-.dot-flashing {
-    position: relative;
-    width: 5px;
-    height: 5px;
-    border-radius: 5px;
-    background-color: #64748b; /* Muted color */
-    color: #64748b;
-    animation: dotFlashing 1s infinite linear alternate;
-    animation-delay: .5s;
-    margin: 0 4px; /* Spacing for dots */
-}
-
-.dot-flashing::before, .dot-flashing::after {
-    content: '';
-    display: inline-block;
-    position: absolute;
-    top: 0;
-    width: 5px;
-    height: 5px;
-    border-radius: 5px;
-    background-color: #64748b;
-    color: #64748b;
-}
-
-.dot-flashing::before {
-    left: -10px; /* Position before dot */
-    animation: dotFlashing 1s infinite alternate;
-    animation-delay: 0s;
-}
-
-.dot-flashing::after {
-    left: 10px; /* Position after dot */
-    animation: dotFlashing 1s infinite alternate;
-    animation-delay: 1s;
-}
-
-@keyframes dotFlashing {
-    0% {
-        background-color: #64748b; /* Start color */
-    }
-    50%, 100% {
-        background-color: #cbd5e1; /* End color (lighter) */
-    }
-}
-
-/* Send Button Loading Spinner */
-#send-button svg {
-    display: block;
-}
-
-#send-button.sending svg {
-    display: none;
-}
-
-#send-button.sending::after {
-    content: '';
-    display: block;
-    width: 16px; /* Spinner size */
-    height: 16px;
-    border: 2px solid transparent;
-    border-top-color: white; /* Spinner color */
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-/* Original Goodbye Message Style (might not be used) */
-#goodbye-message {
-    display: none;
-    text-align: center;
-    margin-top: 2rem;
-    font-size: 1.1rem;
-    color: #334155;
+    /* background-color: #f3f4f6; /* bg-gray-100 equivalent */ */
 }
